@@ -1,9 +1,17 @@
-const http = require('http');
+const express = require("express");
 
-const routes = require('./routes');
+const app = express();
 
-console.log(routes.someText);
+app.use((req, res, next) => {
+  console.log("in the middleware");
+  next(); //allows to pass to the next middleware!
+}); //adds a middleware function
 
-const server = http.createServer(routes.handler);
+app.use((req, res, next) => {
+  console.log("in second middleware");
+  res.send("<h1>Hello from Express</h1>");
+}); //adds a middleware function
 
-server.listen(3000);
+app.listen(3000, () => {
+  console.log("Server in port 3000");
+});
