@@ -1,16 +1,28 @@
 const express = require("express");
+const path = require("path");
+const rootDir = require("./util/path");
+
+const bodyParser = require("body-parser");
+
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 const app = express();
 
-app.use((req, res, next) => {
-  console.log("in the middleware");
-  next(); //allows to pass to the next middleware!
-}); //adds a middleware function
+// middleware for parsing body from request
+app.use(bodyParser.urlencoded({ extended: false }));
+
+//read access
+app.use(express.static(path.join(__dirname, "public")));
+
+// considers the routes from the admin file
+app.use("/admin", adminRoutes);
+app.use("/", shopRoutes);
 
 app.use((req, res, next) => {
-  console.log("in second middleware");
-  res.send("<h1>Hello from Express</h1>");
-}); //adds a middleware function
+  // chaining
+  res.status(404).sendFile(path.join(rootDir, "views", "no-page-found.html"));
+});
 
 app.listen(3000, () => {
   console.log("Server in port 3000");
