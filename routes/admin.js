@@ -1,26 +1,18 @@
 const express = require("express");
-const rootDir = require("../util/path");
-const path = require("path");
+// const rootDir = require("../util/path");
+// const path = require("path");
+// different way to add a path
+const productsController = require("../controllers/products");
 
 const router = express.Router();
 
-// const
-const products = [];
+router.get("/products", productsController.getAdminProducts);
 
-router.get("/add-product", (req, res) => {
-  // res.sendFile(path.join(rootDir, "views", "add-product.html"));
-  res.render("add-product", {
-    pageTitle: "Add Product",
-    path: "/admin/add-product",
-  });
-});
+router.get("/add-product", productsController.getAddProduct);
 
-router.post("/add-product", (req, res) => {
-  const { title } = req.body;
-  products.push({ title: title });
+router.post("/add-product", productsController.postAddProduct);
 
-  res.status(200).redirect("/");
-});
-
-exports.routes = router;
-exports.products = products;
+module.exports = router;
+// exports.routes = router;
+// removed it because it doesn't live here but it is related to the previous class
+// exports.products = products;
