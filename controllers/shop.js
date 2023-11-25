@@ -1,30 +1,20 @@
 const Products = require("../models/product");
 
-// Admin
-
-exports.getAdminProducts = (req, res) => {
-  res.render("admin/products", {
+exports.getOrdersPage = (req, res) => {
+  res.render("shop/orders", {
     prods: [],
-    pageTitle: "Admin - Products",
-    path: "admin/add-product",
+    pageTitle: "Your orders",
+    path: "/orders",
   });
 };
 
-exports.getAddProduct = (req, res) => {
-  // res.sendFile(path.join(rootDir, "views", "add-product.html"));
-  res.render("admin/add-product", {
-    pageTitle: "Add Product",
-    path: "/admin/add-product",
+exports.getCheckout = (req, res) => {
+  res.render("shop/checkout", {
+    prods: [],
+    pageTitle: "checkout",
+    path: "/checkout",
   });
 };
-
-exports.postAddProduct = (req, res) => {
-  const prod = new Products(req.body.title);
-  prod.save();
-  res.status(200).redirect("/");
-};
-
-// Shop
 
 exports.getCart = (req, res) => {
   res.render("shop/cart", {
@@ -56,9 +46,15 @@ exports.getProducts = (req, res) => {
   });
 };
 
-exports.getShop = (req, res) => {
-  res.render("shop/", {
-    pageTitle: "Welcome!",
-    path: "/",
+exports.getIndex = (req, res) => {
+  Products.fetchAll((prodsArray) => {
+    res.render("shop/products-list", {
+      prods: prodsArray,
+      pageTitle: "Home",
+      path: "/",
+      hasProducts: prodsArray.length > 0,
+      activeShop: true,
+      productCss: true,
+    });
   });
 };
