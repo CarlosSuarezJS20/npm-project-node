@@ -10,9 +10,16 @@ shopRouter.get("/orders", shopControllers.getOrdersPage);
 
 shopRouter.get("/checkout", shopControllers.getCheckout);
 
+shopRouter.post("/cart", shopControllers.postAddCart);
+
 shopRouter.get("/cart", shopControllers.getCart);
 
 shopRouter.get("/products", shopControllers.getProducts);
+
+shopRouter.get(
+  "/product-details/:product_id",
+  shopControllers.getProductDetails
+);
 
 shopRouter.get("/", shopControllers.getIndex);
 
