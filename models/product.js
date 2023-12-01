@@ -1,39 +1,58 @@
 // const products = [];
 const fs = require("fs");
+
 const path = require("path");
+const getProductsFromFile = require("../util/getProductsFile");
 
 const rootDir = require("../util/path");
+const Cart = require("./cart");
 
 const p = path.join(rootDir, "data", "products.json");
 
-const getProductsFromFile = (cb) => {
-  // async
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      return cb([]);
-    }
-
-    cb(JSON.parse(fileContent));
-  });
-  // return products;
-};
-
 module.exports = class product {
-  constructor(title, imageURL, description, price) {
+  constructor(productId, title, imageURL, description, price) {
+    this.id = productId !== undefined ? productId : null;
     this.title = title;
     this.imageUrl = imageURL;
     this.description = description;
     this.price = price;
   }
 
-  delete() {}
+  static delete(productId) {
+    getProductsFromFile(p, (prods) => {
+      const currentProducts = [...prods];
+      const deletedProduct = currentProducts.find(
+        (prod) => prod.id === productId
+      );
+      const deletingProductIndex = currentProducts.findIndex(
+        (prod) => prod.id === productId
+      );
+      currentProducts.splice(deletingProductIndex, 1);
+      fs.writeFile(p, JSON.stringify(currentProducts), (err) => {
+        if (!err) {
+          Cart.deleteProductFromCart(productId, deletedProduct.price);
+        }
+      });
+    });
+  }
 
-  edit() {}
+  edit() {
+    getProductsFromFile(p, (prods) => {
+      const currentProducts = [...prods];
+      const editingProductPosition = prods.findIndex(
+        (prod) => prod.id == this.id
+      );
+
+      currentProducts[editingProductPosition] = this;
+      fs.writeFile(p, JSON.stringify(currentProducts), (err) => {
+        console.log(err);
+      });
+    });
+  }
 
   save() {
     // products.push(this);
-    getProductsFromFile((prods) => {
-      console.log("here saving");
+    getProductsFromFile(p, (prods) => {
       this.id = (this.title + Math.random().toString()).trim();
       prods.push(this);
       fs.writeFile(p, JSON.stringify(prods), (err) => {
@@ -55,14 +74,14 @@ module.exports = class product {
   }
 
   static fetchProductById(id, cb) {
-    getProductsFromFile((products) => {
+    getProductsFromFile(p, (products) => {
       const selectedProduct = products.find((prod) => prod.id === id);
       cb(selectedProduct);
     });
   }
 
   static fetchAll(cb) {
-    getProductsFromFile(cb);
+    getProductsFromFile(p, cb);
     // const p = path.join(rootDir, "data", "products.json");
 
     // fs.readFile(p, (err, fileContent) => {

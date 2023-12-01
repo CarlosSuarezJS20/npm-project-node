@@ -1,15 +1,46 @@
 const fs = require("fs");
 const path = require("path");
+const getProductsFromFile = require("../util/getProductsFile");
 
 const rootDir = require("../util/path");
 
 const p = path.join(rootDir, "data", "cart.json");
 
 module.exports = class Cart {
+  static getCart(cb) {
+    getProductsFromFile(p, cb);
+  }
+
+  static deleteProductFromCart(productId, price) {
+    getProductsFromFile(p, (cart) => {
+      const newCart = { products: [], totalPrice: 0 };
+      if (cart.length === 0) {
+        return;
+      }
+
+      let { products, totalPrice } = cart;
+      const updatedCartProducts = [...products];
+      const deletedItemIndex = updatedCartProducts.findIndex(
+        (prod) => prod.productId === productId
+      );
+      const deletedProductDetails = updatedCartProducts[deletedItemIndex];
+      const valueFromDeletedProductQuantity =
+        deletedProductDetails.quantity * price;
+      newCart.products = [
+        ...updatedCartProducts.filter(
+          (prod) => prod.productId !== deletedProductDetails.productId
+        ),
+      ];
+      newCart.totalPrice = totalPrice - valueFromDeletedProductQuantity;
+      fs.writeFile(p, JSON.stringify(newCart), (err) => console.log(err));
+    });
+  }
+
   static addProductToCart(id, productPrice) {
     let cart = { products: [], totalPrice: 0 };
     // Fetch previous cart
     fs.readFile(p, (err, fileContent) => {
+      let updateProduct;
       //if error cart does not exist
       if (!err) {
         cart = JSON.parse(fileContent);
@@ -17,10 +48,11 @@ module.exports = class Cart {
       // analyze cart
 
       const existingProductPosition = cart.products.findIndex(
-        (prod) => prod.id === id
+        (prod) => prod.productId === id
       );
+
       const existingProductDetails = cart.products[existingProductPosition];
-      let updateProduct;
+
       //  if product is not in cart
       if (existingProductDetails) {
         updateProduct = { ...existingProductDetails };

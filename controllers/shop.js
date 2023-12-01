@@ -19,7 +19,6 @@ exports.getCheckout = (req, res) => {
 
 exports.postAddCart = (req, res) => {
   const { productId } = req.body;
-  console.log(productId);
   Products.fetchProductById(productId, (prod) => {
     Cart.addProductToCart(productId, prod.price);
   });
@@ -28,11 +27,14 @@ exports.postAddCart = (req, res) => {
 };
 
 exports.getCart = (req, res) => {
-  res.render("shop/cart", {
-    prods: [],
-    pageTitle: "My Cart",
-    path: "/cart",
-    hasProductsInCart: false,
+  Cart.getCart((cartProds) => {
+    console.log(cartProds);
+    res.render("shop/cart", {
+      prods: cartProds,
+      pageTitle: "My Cart",
+      path: "/cart",
+      hasProductsInCart: false,
+    });
   });
 };
 
