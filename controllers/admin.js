@@ -52,7 +52,7 @@ exports.getEditProduct = (req, res) => {
 
 exports.postDeleteById = (req, res) => {
   const productId = req.params.productId;
-  Products.delete(productId);
+  Products.deleteById(productId);
   res.status(200).redirect("/admin/products");
 };
 

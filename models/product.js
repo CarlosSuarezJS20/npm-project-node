@@ -18,7 +18,7 @@ module.exports = class product {
     this.price = price;
   }
 
-  static delete(productId) {
+  static deleteById(productId) {
     getProductsFromFile(p, (prods) => {
       const currentProducts = [...prods];
       const deletedProduct = currentProducts.find(
@@ -30,7 +30,17 @@ module.exports = class product {
       currentProducts.splice(deletingProductIndex, 1);
       fs.writeFile(p, JSON.stringify(currentProducts), (err) => {
         if (!err) {
-          Cart.deleteProductFromCart(productId, deletedProduct.price);
+          Cart.getCart((cart) => {
+            const { products: cartProducts, totalPrice } = cart;
+            const productExistInCart = cartProducts.find(
+              (prod) => prod.productId === productId
+            );
+            if (productExistInCart) {
+              Cart.deleteProductFromCart(productId, deletedProduct.price);
+            } else {
+              return;
+            }
+          });
         }
       });
     });

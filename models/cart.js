@@ -69,6 +69,4 @@ module.exports = class Cart {
     });
     // return products;
   }
-
-  // increase or decrease quantity
 };

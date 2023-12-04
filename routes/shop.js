@@ -10,6 +10,8 @@ shopRouter.get("/orders", shopControllers.getOrdersPage);
 
 shopRouter.get("/checkout", shopControllers.getCheckout);
 
+shopRouter.post("/delete-cart-product", shopControllers.postDeleteCartItemById);
+
 shopRouter.post("/cart", shopControllers.postAddCart);
 
 shopRouter.get("/cart", shopControllers.getCart);
